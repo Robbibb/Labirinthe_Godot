@@ -51,18 +51,34 @@ func generate_level():
 
 	# Générer un chemin solution
 	var solution_path = generate_solution_path()
-	available_moves = solution_path.duplicate()
 
-	# Ajouter des mouvements supplémentaires variés (au moins 2 de chaque direction)
-	var extra_per_direction = 2
+	# Vérifier que le chemin est valide (atteint bien la destination)
+	var test_pos = start_pos
+	for dir in solution_path:
+		test_pos += direction_vectors[dir]
+
+	# Si le chemin n'atteint pas la destination, régénérer le niveau
+	if test_pos != end_pos:
+		print("Chemin invalide détecté, régénération...")
+		generate_level()
+		return
+
+	# Compter combien de chaque direction est nécessaire dans la solution
+	var direction_counts = [0, 0, 0, 0]  # RIGHT, LEFT, UP, DOWN
+	for dir in solution_path:
+		direction_counts[dir] += 1
+
+	# Construire available_moves en garantissant qu'on a AU MOINS les mouvements nécessaires
+	available_moves.clear()
+
+	# Ajouter les mouvements nécessaires + quelques extras pour chaque direction
 	for dir in range(4):
-		for i in range(extra_per_direction):
-			available_moves.append(dir)
+		var needed = direction_counts[dir]
+		var extras = randi() % 3 + 2  # 2 à 4 mouvements supplémentaires
+		var total = needed + extras
 
-	# Ajouter quelques mouvements aléatoires supplémentaires
-	var random_extras = randi() % 4 + 2
-	for i in range(random_extras):
-		available_moves.append(randi() % 4)
+		for i in range(total):
+			available_moves.append(dir)
 
 	# Mélanger les mouvements
 	available_moves.shuffle()
