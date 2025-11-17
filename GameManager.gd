@@ -6,7 +6,6 @@ extends Node2D
 @onready var direction_selector = $UI/DirectionSelector
 @onready var execute_button = $UI/ExecuteButton
 @onready var reset_button = $UI/ResetButton
-@onready var player_sprite = $Grid/Player
 @onready var level_label = $UI/LevelLabel
 @onready var stars_label = $UI/StarsLabel
 @onready var previous_level_button = $UI/PreviousLevelButton
@@ -293,11 +292,13 @@ func update_player_position():
 
 func show_error():
 	"""Affiche une animation d'erreur"""
-	if player_sprite:
+	if grid:
 		for i in range(3):
-			player_sprite.modulate = Color.RED
+			grid.player_flash_color = Color.RED
+			grid.queue_redraw()
 			await get_tree().create_timer(0.2).timeout
-			player_sprite.modulate = Color.WHITE
+			grid.player_flash_color = Color(1.0, 0.5, 0.0)  # Orange
+			grid.queue_redraw()
 			await get_tree().create_timer(0.2).timeout
 
 func show_victory(stars: int):

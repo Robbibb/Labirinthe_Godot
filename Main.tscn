@@ -21,9 +21,6 @@ mouse_filter = 2
 position = Vector2(50, 80)
 script = ExtResource("2")
 
-[node name="Player" type="Sprite2D" parent="Grid"]
-modulate = Color(1, 0.5, 0, 1)
-
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0

@@ -10,6 +10,8 @@ var player_pos = Vector2i(0, 0)
 var player_flash_color = Color(1.0, 0.5, 0.0)  # Orange par défaut
 
 func _ready():
+	print("Grid _ready appelé, GRID_SIZE: ", GRID_SIZE)
+	visible = true  # S'assurer que le Grid est visible
 	queue_redraw()
 
 func setup_grid(start: Vector2i, end: Vector2i, obs: Array, grid_size: int = 5):
@@ -19,6 +21,7 @@ func setup_grid(start: Vector2i, end: Vector2i, obs: Array, grid_size: int = 5):
 	end_pos = end
 	player_pos = start
 	obstacles = obs.duplicate()
+	print("Grid setup_grid appelé - Taille: ", GRID_SIZE, "x", GRID_SIZE, ", Start: ", start, ", End: ", end, ", Obstacles: ", obstacles.size())
 	queue_redraw()
 
 func set_player_position(pos: Vector2i):
@@ -32,6 +35,8 @@ func grid_to_pixel(grid_pos: Vector2i) -> Vector2:
 
 func _draw():
 	"""Dessine la grille"""
+	print("Grid _draw appelé - GRID_SIZE: ", GRID_SIZE, ", Position: ", position)
+
 	# Dessiner les cases
 	for y in range(GRID_SIZE):
 		for x in range(GRID_SIZE):
