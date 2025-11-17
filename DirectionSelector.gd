@@ -32,20 +32,57 @@ func create_direction_buttons():
 		var button = Button.new()
 		button.custom_minimum_size = Vector2(100, 100)
 
-		# Texte du bouton selon la direction
+		# Texte et couleur du bouton selon la direction
 		var arrow_text = ""
+		var button_color = Color.WHITE
 		match direction:
 			0:  # RIGHT
-				arrow_text = "DROITE"
+				arrow_text = "➡️ DROITE"
+				button_color = Color(0.4, 0.7, 1.0)  # Bleu clair
 			1:  # LEFT
-				arrow_text = "GAUCHE"
+				arrow_text = "⬅️ GAUCHE"
+				button_color = Color(1.0, 0.6, 0.4)  # Orange clair
 			2:  # UP
-				arrow_text = "HAUT"
+				arrow_text = "⬆️ HAUT"
+				button_color = Color(0.6, 1.0, 0.6)  # Vert clair
 			3:  # DOWN
-				arrow_text = "BAS"
+				arrow_text = "⬇️ BAS"
+				button_color = Color(1.0, 0.9, 0.4)  # Jaune
 
 		button.text = arrow_text
-		button.add_theme_font_size_override("font_size", 18)
+		button.add_theme_font_size_override("font_size", 16)
+		button.add_theme_color_override("font_color", Color.BLACK)
+
+		# Créer un StyleBox coloré pour le bouton
+		var style_normal = StyleBoxFlat.new()
+		style_normal.bg_color = button_color
+		style_normal.corner_radius_top_left = 10
+		style_normal.corner_radius_top_right = 10
+		style_normal.corner_radius_bottom_left = 10
+		style_normal.corner_radius_bottom_right = 10
+		style_normal.border_width_all = 3
+		style_normal.border_color = Color.WHITE
+		button.add_theme_stylebox_override("normal", style_normal)
+
+		var style_hover = StyleBoxFlat.new()
+		style_hover.bg_color = button_color.lightened(0.2)
+		style_hover.corner_radius_top_left = 10
+		style_hover.corner_radius_top_right = 10
+		style_hover.corner_radius_bottom_left = 10
+		style_hover.corner_radius_bottom_right = 10
+		style_hover.border_width_all = 3
+		style_hover.border_color = Color.WHITE
+		button.add_theme_stylebox_override("hover", style_hover)
+
+		var style_pressed = StyleBoxFlat.new()
+		style_pressed.bg_color = button_color.darkened(0.2)
+		style_pressed.corner_radius_top_left = 10
+		style_pressed.corner_radius_top_right = 10
+		style_pressed.corner_radius_bottom_left = 10
+		style_pressed.corner_radius_bottom_right = 10
+		style_pressed.border_width_all = 3
+		style_pressed.border_color = Color.WHITE
+		button.add_theme_stylebox_override("pressed", style_pressed)
 
 		# Stocker la direction dans les métadonnées du bouton
 		button.set_meta("direction", direction)
