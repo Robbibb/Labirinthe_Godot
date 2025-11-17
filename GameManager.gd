@@ -9,6 +9,9 @@ extends Node2D
 @onready var player_sprite = $Grid/Player
 @onready var level_label = $UI/LevelLabel
 @onready var stars_label = $UI/StarsLabel
+@onready var previous_level_button = $UI/PreviousLevelButton
+@onready var next_level_button = $UI/NextLevelButton
+@onready var reset_progress_button = $UI/ResetProgressButton
 
 # Gestionnaire de niveaux
 var level_manager
@@ -201,6 +204,15 @@ func setup_ui():
 	if reset_button:
 		reset_button.pressed.connect(_on_reset_pressed)
 
+	if previous_level_button:
+		previous_level_button.pressed.connect(_on_previous_level_pressed)
+
+	if next_level_button:
+		next_level_button.pressed.connect(_on_next_level_pressed)
+
+	if reset_progress_button:
+		reset_progress_button.pressed.connect(_on_reset_progress_pressed)
+
 func _on_direction_selected(direction: int):
 	"""Appelé quand une direction est sélectionnée"""
 	selected_sequence.append(direction)
@@ -326,3 +338,43 @@ func update_ui_labels():
 		stars_label.text = "⭐ Total: " + str(level_manager.total_stars)
 	else:
 		print("Attention: stars_label n'existe pas")
+
+func _on_previous_level_pressed():
+	"""Revenir au niveau précédent"""
+	if is_executing:
+		return
+
+	if level_manager.current_level > 0:
+		level_manager.current_level -= 1
+		print("Retour au niveau ", level_manager.current_level + 1)
+		generate_level()
+		_on_reset_pressed()
+		update_ui_labels()
+	else:
+		print("Déjà au premier niveau")
+
+func _on_next_level_pressed():
+	"""Passer au niveau suivant"""
+	if is_executing:
+		return
+
+	var max_level = level_manager.get_total_levels()
+	if level_manager.current_level < max_level - 1:
+		level_manager.current_level += 1
+		print("Passage au niveau ", level_manager.current_level + 1)
+		generate_level()
+		_on_reset_pressed()
+		update_ui_labels()
+	else:
+		print("C'est le dernier niveau prédéfini")
+
+func _on_reset_progress_pressed():
+	"""Réinitialiser toute la progression"""
+	if is_executing:
+		return
+
+	print("Réinitialisation de la progression...")
+	level_manager.reset_progress()
+	generate_level()
+	_on_reset_pressed()
+	update_ui_labels()

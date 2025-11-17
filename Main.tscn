@@ -48,6 +48,36 @@ offset_bottom = 50.0
 theme_override_font_sizes/font_size = 24
 text = "⭐ Total: 0"
 
+[node name="PreviousLevelButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 350.0
+offset_right = 640.0
+offset_bottom = 400.0
+theme_override_font_sizes/font_size = 20
+text = "← Niveau
+Précédent"
+
+[node name="NextLevelButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 660.0
+offset_top = 350.0
+offset_right = 780.0
+offset_bottom = 400.0
+theme_override_font_sizes/font_size = 20
+text = "Niveau
+Suivant →"
+
+[node name="ResetProgressButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 800.0
+offset_top = 350.0
+offset_right = 950.0
+offset_bottom = 400.0
+theme_override_font_sizes/font_size = 18
+text = "Recommencer
+depuis le début"
+
 [node name="Zone2Label" type="Label" parent="UI"]
 layout_mode = 0
 offset_left = 520.0
