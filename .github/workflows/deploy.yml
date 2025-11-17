@@ -5,6 +5,7 @@ on:
     branches:
       - claude/godot-puzzle-game-01JS4RzFSkCE3Pg6hetEFY7L
       - main
+  workflow_dispatch:
 
 env:
   GODOT_VERSION: 4.2.2
