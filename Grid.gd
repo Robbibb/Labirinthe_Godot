@@ -84,7 +84,8 @@ func draw_player(pos: Vector2):
 	"""Dessine un personnage mignon pour le joueur"""
 	# Corps principal (cercle avec la couleur flash)
 	draw_circle(pos, 22, player_flash_color)
-	draw_circle(pos, 22, Color.WHITE, false, 3.0)  # Contour blanc
+	# Contour blanc (utiliser draw_arc pour le contour)
+	draw_arc(pos, 22, 0, TAU, 32, Color.WHITE, 3.0)
 
 	# Yeux
 	var eye_offset = 8
@@ -125,7 +126,8 @@ func draw_start_marker(pos: Vector2):
 	"""Dessine un marqueur de départ"""
 	# Cercle de départ
 	draw_circle(pos, 18, Color(0.3, 0.6, 1.0))
-	draw_circle(pos, 18, Color.WHITE, false, 3.0)
+	# Contour blanc
+	draw_arc(pos, 18, 0, TAU, 32, Color.WHITE, 3.0)
 
 	# Flèche vers le haut
 	var arrow_points = PackedVector2Array([
