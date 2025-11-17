@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labyrinthe Puzzle - Configuration requise</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #764ba2;
+            margin: 30px 0 15px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #667eea;
+            margin: 20px 0 10px;
+            font-size: 1.3em;
+        }
+        .alert {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+        .info {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .step strong {
+            color: #764ba2;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        p {
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Labyrinthe Puzzle</h1>
+        <p><em>Un jeu de puzzle/labyrinthe créé avec Godot 4.2</em></p>
+
+        <div class="alert">
+            <strong>⚠️ Configuration requise</strong><br>
+            Le jeu n'est pas encore déployé. Suivez les étapes ci-dessous pour l'activer.
+        </div>
+
+        <h2>📋 Étapes de configuration</h2>
+
+        <div class="step">
+            <strong>Étape 1 :</strong> Allez dans les paramètres GitHub Pages<br>
+            <a href="https://github.com/Robbibb/Labirinthe_Godot/settings/pages" target="_blank" class="btn">🔧 Ouvrir les Settings GitHub Pages</a>
+        </div>
+
+        <div class="step">
+            <strong>Étape 2 :</strong> Sous "Build and deployment", configurez :
+            <ul>
+                <li><strong>Source:</strong> Deploy from a branch</li>
+                <li><strong>Branch:</strong> gh-pages</li>
+                <li><strong>Folder:</strong> / (root)</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>Étape 3 :</strong> Cliquez sur <strong>Save</strong>
+        </div>
+
+        <div class="step">
+            <strong>Étape 4 :</strong> Vérifiez que le workflow GitHub Actions s'est exécuté<br>
+            <a href="https://github.com/Robbibb/Labirinthe_Godot/actions" target="_blank" class="btn btn-secondary">📊 Voir les Workflows</a>
+        </div>
+
+        <div class="step">
+            <strong>Étape 5 :</strong> Attendez 2-3 minutes que le workflow se termine, puis rafraîchissez cette page
+        </div>
+
+        <div class="alert info">
+            <strong>ℹ️ Note :</strong> Le workflow GitHub Actions construit automatiquement le jeu en HTML5 et le déploie sur la branche <code>gh-pages</code>. Une fois configuré, chaque modification du code déclenchera automatiquement un nouveau déploiement.
+        </div>
+
+        <h2>📖 À propos du jeu</h2>
+
+        <h3>Description</h3>
+        <p>Un jeu de puzzle où vous devez trouver le bon chemin en sélectionnant une séquence de déplacements pour atteindre l'arrivée en évitant les obstacles.</p>
+
+        <h3>Les 3 zones du jeu</h3>
+        <ul>
+            <li><strong>Zone 1 - Damier 5x5 :</strong> Grille avec point de départ (D), point d'arrivée (A) et obstacles aléatoires</li>
+            <li><strong>Zone 2 - Séquenceur :</strong> Affiche votre séquence de mouvements sélectionnée</li>
+            <li><strong>Zone 3 - Sélection :</strong> Boutons de direction (↑ ↓ ← →) pour créer votre séquence</li>
+        </ul>
+
+        <h3>Comment jouer</h3>
+        <ol>
+            <li>Observer la position de départ et d'arrivée</li>
+            <li>Planifier votre chemin en évitant les obstacles</li>
+            <li>Cliquer sur les flèches pour créer votre séquence</li>
+            <li>Appuyer sur "Exécuter" pour tester</li>
+            <li>Utiliser "Reset" si vous vous trompez</li>
+        </ol>
+
+        <h3>Fonctionnalités</h3>
+        <ul>
+            <li>✅ Génération aléatoire de niveaux</li>
+            <li>✅ Animation case par case des déplacements</li>
+            <li>✅ Détection des collisions</li>
+            <li>✅ Feedback visuel (rouge = erreur, vert = victoire)</li>
+            <li>✅ Nouveau niveau automatique après chaque victoire</li>
+        </ul>
+
+        <h2>🔗 Liens utiles</h2>
+        <a href="https://github.com/Robbibb/Labirinthe_Godot" target="_blank" class="btn">💻 Code source</a>
+        <a href="https://github.com/Robbibb/Labirinthe_Godot/actions" target="_blank" class="btn btn-secondary">📊 Workflows</a>
+        <a href="https://github.com/Robbibb/Labirinthe_Godot/settings/pages" target="_blank" class="btn">⚙️ Settings</a>
+
+        <div class="alert success" style="margin-top: 40px;">
+            <strong>✨ Prêt à jouer ?</strong><br>
+            Une fois GitHub Pages configuré, cette page sera remplacée par le jeu. Bonne chance ! 🎯
+        </div>
+    </div>
+</body>
+</html>
