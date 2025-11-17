@@ -39,9 +39,10 @@ jobs:
           mkdir -v -p build/web
           ./Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --verbose --export-release "Web" ./build/web/index.html
 
-      - name: Copy COI Service Worker
+      - name: Add COI Service Worker
         run: |
           cp coi-serviceworker.js build/web/
+          sed -i 's|<head>|<head><script src="coi-serviceworker.js"></script>|' build/web/index.html
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
