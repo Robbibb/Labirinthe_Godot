@@ -39,8 +39,11 @@ var direction_vectors = {
 
 func _ready():
 	# Créer le gestionnaire de niveaux
-	level_manager = load("res://LevelManager.gd").new()
+	var LevelManagerClass = load("res://LevelManager.gd")
+	level_manager = LevelManagerClass.new()
 	add_child(level_manager)
+
+	print("LevelManager créé, niveau actuel: ", level_manager.current_level)
 
 	generate_level()
 	setup_ui()
@@ -52,8 +55,14 @@ func generate_level():
 	randomize()
 
 	# Obtenir la configuration du niveau actuel
+	if not level_manager:
+		print("ERREUR: level_manager est null dans generate_level!")
+		return
+
 	var config = level_manager.get_current_level_config()
 	GRID_SIZE = config.grid_size
+
+	print("Génération niveau - Grille: ", GRID_SIZE, "x", GRID_SIZE, ", Obstacles: ", config.obstacles)
 
 	# Choisir départ et arrivée
 	start_pos = Vector2i(randi() % GRID_SIZE, randi() % GRID_SIZE)
@@ -299,11 +308,21 @@ func show_victory(stars: int):
 
 func update_ui_labels():
 	"""Met à jour les labels d'UI avec les infos du niveau"""
+	if not level_manager:
+		print("Erreur: level_manager n'existe pas!")
+		return
+
+	var level_num = level_manager.get_level_number()
+	var config = level_manager.get_current_level_config()
+
+	print("Mise à jour UI - Niveau: ", level_num, ", Difficulté: ", config.difficulty, ", Étoiles: ", level_manager.total_stars)
+
 	if level_label:
-		var level_num = level_manager.get_level_number()
-		var total_levels = level_manager.get_total_levels()
-		var config = level_manager.get_current_level_config()
 		level_label.text = "Niveau " + str(level_num) + " - " + config.difficulty
+	else:
+		print("Attention: level_label n'existe pas")
 
 	if stars_label:
 		stars_label.text = "⭐ Total: " + str(level_manager.total_stars)
+	else:
+		print("Attention: stars_label n'existe pas")
