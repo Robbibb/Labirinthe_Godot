@@ -1,0 +1,28 @@
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="128" height="128" fill="#4a90e2" rx="20"/>
+
+  <!-- Grid pattern -->
+  <g stroke="#ffffff" stroke-width="2" fill="none">
+    <line x1="30" y1="30" x2="98" y2="30"/>
+    <line x1="30" y1="47" x2="98" y2="47"/>
+    <line x1="30" y1="64" x2="98" y2="64"/>
+    <line x1="30" y1="81" x2="98" y2="81"/>
+    <line x1="30" y1="98" x2="98" y2="98"/>
+
+    <line x1="30" y1="30" x2="30" y2="98"/>
+    <line x1="47" y1="30" x2="47" y2="98"/>
+    <line x1="64" y1="30" x2="64" y2="98"/>
+    <line x1="81" y1="30" x2="81" y2="98"/>
+    <line x1="98" y1="30" x2="98" y2="98"/>
+  </g>
+
+  <!-- Start point (blue) -->
+  <circle cx="38" cy="38" r="6" fill="#2ecc71"/>
+
+  <!-- End point (green) -->
+  <circle cx="90" cy="90" r="6" fill="#e74c3c"/>
+
+  <!-- Arrow -->
+  <path d="M 45 60 L 70 60 L 70 50 L 85 64 L 70 78 L 70 68 L 45 68 Z" fill="#ffffff"/>
+</svg>
