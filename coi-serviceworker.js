@@ -67,7 +67,7 @@ if (typeof window === 'undefined') {
         const coepCredentialless = !coepDegrading && (typeof window.credentialless !== "undefined");
         const registerAndReload = (shouldReload) => {
             navigator.serviceWorker
-                .register(window.document.currentScript.src, {
+                .register("./coi-serviceworker.js", {
                     scope: window.location.pathname.replace(/[^\/]+$/, ""),
                 })
                 .then((registration) => {
