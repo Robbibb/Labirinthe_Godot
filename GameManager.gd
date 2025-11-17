@@ -53,9 +53,15 @@ func generate_level():
 	var solution_path = generate_solution_path()
 	available_moves = solution_path.duplicate()
 
-	# Ajouter quelques mouvements supplémentaires aléatoires
-	var extra_moves = randi() % 3 + 1
-	for i in range(extra_moves):
+	# Ajouter des mouvements supplémentaires variés (au moins 2 de chaque direction)
+	var extra_per_direction = 2
+	for dir in range(4):
+		for i in range(extra_per_direction):
+			available_moves.append(dir)
+
+	# Ajouter quelques mouvements aléatoires supplémentaires
+	var random_extras = randi() % 4 + 2
+	for i in range(random_extras):
 		available_moves.append(randi() % 4)
 
 	# Mélanger les mouvements
@@ -69,37 +75,37 @@ func generate_level():
 		grid.setup_grid(start_pos, end_pos, obstacles)
 
 func generate_solution_path() -> Array:
-	"""Génère un chemin solution du départ à l'arrivée"""
+	"""Génère un chemin solution du départ à l'arrivée avec des zigzags"""
 	var path = []
 	var pos = start_pos
-	var visited = {}
-	visited[pos] = true
 
-	# Utiliser un algorithme simple : aller vers la cible
+	# Créer un chemin avec des zigzags pour plus de variété
+	var steps_x = abs(end_pos.x - start_pos.x)
+	var steps_y = abs(end_pos.y - start_pos.y)
+
+	var dir_x = Direction.RIGHT if end_pos.x > start_pos.x else Direction.LEFT
+	var dir_y = Direction.DOWN if end_pos.y > start_pos.y else Direction.UP
+
+	# Alterner entre mouvements X et Y pour créer un zigzag
+	var use_x = true
+
 	while pos != end_pos:
-		var diff = end_pos - pos
-		var possible_dirs = []
-
-		# Prioriser la direction vers la cible
-		if diff.x > 0:
-			possible_dirs.append(Direction.RIGHT)
-		elif diff.x < 0:
-			possible_dirs.append(Direction.LEFT)
-
-		if diff.y > 0:
-			possible_dirs.append(Direction.DOWN)
-		elif diff.y < 0:
-			possible_dirs.append(Direction.UP)
-
-		if possible_dirs.is_empty():
+		if use_x and pos.x != end_pos.x:
+			# Se déplacer horizontalement
+			path.append(dir_x)
+			pos += direction_vectors[dir_x]
+		elif pos.y != end_pos.y:
+			# Se déplacer verticalement
+			path.append(dir_y)
+			pos += direction_vectors[dir_y]
+		else:
 			break
 
-		var chosen_dir = possible_dirs[randi() % possible_dirs.size()]
-		path.append(chosen_dir)
-		pos += direction_vectors[chosen_dir]
+		# Alterner pour créer un zigzag
+		use_x = not use_x
 
-		# Sécurité : limiter la longueur du chemin
-		if path.size() > 20:
+		# Sécurité
+		if path.size() > 30:
 			break
 
 	return path
