@@ -43,10 +43,6 @@ jobs:
         run: |
           cp coi-serviceworker.js build/web/
 
-      - name: Add Service Worker to HTML
-        run: |
-          sed -i 's/<head>/<head>\n<script src="coi-serviceworker.js"><\/script>/' build/web/index.html
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
