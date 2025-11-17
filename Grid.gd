@@ -1,18 +1,20 @@
 extends Node2D
 
-const GRID_SIZE = 5
+var GRID_SIZE = 5
 const CELL_SIZE = 80
 
 var start_pos = Vector2i(0, 0)
 var end_pos = Vector2i(4, 4)
 var obstacles = []
 var player_pos = Vector2i(0, 0)
+var player_flash_color = Color(1.0, 0.5, 0.0)  # Orange par défaut
 
 func _ready():
 	queue_redraw()
 
-func setup_grid(start: Vector2i, end: Vector2i, obs: Array):
+func setup_grid(start: Vector2i, end: Vector2i, obs: Array, grid_size: int = 5):
 	"""Configure la grille avec les positions de départ, arrivée et obstacles"""
+	GRID_SIZE = grid_size
 	start_pos = start
 	end_pos = end
 	player_pos = start
@@ -48,9 +50,9 @@ func _draw():
 			draw_rect(rect, color, true)
 			draw_rect(rect, Color.BLACK, false, 2.0)
 
-	# Dessiner les labels de colonnes (A, B, C, D, E)
-	var columns = ["A", "B", "C", "D", "E"]
-	for i in range(GRID_SIZE):
+	# Dessiner les labels de colonnes (A, B, C, D, E, F, G, H, I)
+	var columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+	for i in range(min(GRID_SIZE, columns.size())):
 		var label_pos = Vector2(i * CELL_SIZE + CELL_SIZE / 2 - 8, -10)
 		draw_string(ThemeDB.fallback_font, label_pos, columns[i], HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.BLACK)
 
@@ -66,6 +68,6 @@ func _draw():
 	draw_circle(grid_to_pixel(end_pos), 15, Color(0.2, 0.8, 0.2))
 	draw_string(ThemeDB.fallback_font, grid_to_pixel(end_pos) - Vector2(8, -5), "A", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
 
-	# Dessiner le joueur
-	draw_circle(grid_to_pixel(player_pos), 18, Color(1.0, 0.5, 0.0))
+	# Dessiner le joueur avec la couleur flash
+	draw_circle(grid_to_pixel(player_pos), 18, player_flash_color)
 	draw_string(ThemeDB.fallback_font, grid_to_pixel(player_pos) - Vector2(8, -5), "P", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)

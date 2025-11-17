@@ -30,6 +30,24 @@ offset_bottom = 60.0
 theme_override_font_sizes/font_size = 32
 text = "Labyrinthe Puzzle"
 
+[node name="LevelLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 450.0
+offset_top = 20.0
+offset_right = 700.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 24
+text = "Niveau 1 - Débutant"
+
+[node name="StarsLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 720.0
+offset_top = 20.0
+offset_right = 900.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 24
+text = "⭐ Total: 0"
+
 [node name="Zone2Label" type="Label" parent="UI"]
 layout_mode = 0
 offset_left = 520.0

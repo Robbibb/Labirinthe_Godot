@@ -7,9 +7,14 @@ extends Node2D
 @onready var execute_button = $UI/ExecuteButton
 @onready var reset_button = $UI/ResetButton
 @onready var player_sprite = $Grid/Player
+@onready var level_label = $UI/LevelLabel
+@onready var stars_label = $UI/StarsLabel
 
-# Configuration du jeu
-const GRID_SIZE = 5
+# Gestionnaire de niveaux
+var level_manager
+
+# Configuration du jeu (dynamique selon le niveau)
+var GRID_SIZE = 5
 const CELL_SIZE = 80
 
 # État du jeu
@@ -20,6 +25,8 @@ var obstacles = []
 var available_moves = []
 var selected_sequence = []
 var is_executing = false
+var optimal_solution = []
+var moves_used = 0
 
 # Directions
 enum Direction { RIGHT, LEFT, UP, DOWN }
@@ -31,13 +38,22 @@ var direction_vectors = {
 }
 
 func _ready():
+	# Créer le gestionnaire de niveaux
+	level_manager = load("res://LevelManager.gd").new()
+	add_child(level_manager)
+
 	generate_level()
 	setup_ui()
 	update_player_position()
+	update_ui_labels()
 
 func generate_level():
-	"""Génère un niveau aléatoire avec un chemin solution"""
+	"""Génère un niveau selon la configuration du LevelManager"""
 	randomize()
+
+	# Obtenir la configuration du niveau actuel
+	var config = level_manager.get_current_level_config()
+	GRID_SIZE = config.grid_size
 
 	# Choisir départ et arrivée
 	start_pos = Vector2i(randi() % GRID_SIZE, randi() % GRID_SIZE)
@@ -48,6 +64,7 @@ func generate_level():
 		end_pos = Vector2i(randi() % GRID_SIZE, randi() % GRID_SIZE)
 
 	current_pos = start_pos
+	moves_used = 0
 
 	# Générer un chemin solution
 	var solution_path = generate_solution_path()
@@ -62,6 +79,9 @@ func generate_level():
 		print("Chemin invalide détecté, régénération...")
 		generate_level()
 		return
+
+	# Sauvegarder la solution optimale
+	optimal_solution = solution_path.duplicate()
 
 	# Compter combien de chaque direction est nécessaire dans la solution
 	var direction_counts = [0, 0, 0, 0]  # RIGHT, LEFT, UP, DOWN
@@ -88,7 +108,7 @@ func generate_level():
 
 	# Mettre à jour l'affichage
 	if grid:
-		grid.setup_grid(start_pos, end_pos, obstacles)
+		grid.setup_grid(start_pos, end_pos, obstacles, GRID_SIZE)
 
 func generate_solution_path() -> Array:
 	"""Génère un chemin solution du départ à l'arrivée avec des zigzags"""
@@ -130,6 +150,10 @@ func generate_obstacles(solution_path: Array):
 	"""Génère des obstacles en évitant le chemin solution"""
 	obstacles.clear()
 
+	# Obtenir le nombre d'obstacles depuis la configuration
+	var config = level_manager.get_current_level_config()
+	var num_obstacles = config.obstacles
+
 	# Calculer les positions du chemin solution
 	var solution_positions = {}
 	var pos = start_pos
@@ -141,7 +165,6 @@ func generate_obstacles(solution_path: Array):
 			solution_positions[pos] = true
 
 	# Ajouter des obstacles aléatoires
-	var num_obstacles = randi() % 8 + 3
 	for i in range(num_obstacles):
 		var obs_pos = Vector2i(randi() % GRID_SIZE, randi() % GRID_SIZE)
 
@@ -223,10 +246,19 @@ func execute_sequence():
 
 		# Vérifier si on a atteint l'arrivée
 		if current_pos == end_pos:
-			await show_victory()
-			await get_tree().create_timer(1.0).timeout
+			moves_used = selected_sequence.size()
+			var stars = level_manager.calculate_stars(moves_used, optimal_solution.size())
+
+			await show_victory(stars)
+			await get_tree().create_timer(1.5).timeout
+
+			# Enregistrer le niveau comme complété
+			level_manager.complete_level(stars)
+
+			# Générer le niveau suivant
 			generate_level()
 			_on_reset_pressed()
+			update_ui_labels()
 			return
 
 	# Séquence terminée mais pas à l'arrivée
@@ -247,11 +279,31 @@ func show_error():
 			player_sprite.modulate = Color.WHITE
 			await get_tree().create_timer(0.2).timeout
 
-func show_victory():
-	"""Affiche une animation de victoire"""
-	if player_sprite:
+func show_victory(stars: int):
+	"""Affiche une animation de victoire avec les étoiles"""
+	# Animation du joueur
+	if grid:
 		for i in range(3):
-			player_sprite.modulate = Color.GREEN
+			grid.player_flash_color = Color.GREEN
+			grid.queue_redraw()
 			await get_tree().create_timer(0.2).timeout
-			player_sprite.modulate = Color.WHITE
+			grid.player_flash_color = Color(1.0, 0.5, 0.0)  # Orange
+			grid.queue_redraw()
 			await get_tree().create_timer(0.2).timeout
+
+	# Afficher le message de victoire avec les étoiles
+	var stars_text = ""
+	for i in range(stars):
+		stars_text += "⭐"
+	print("Niveau terminé ! ", stars_text, " (", moves_used, " mouvements, optimal: ", optimal_solution.size(), ")")
+
+func update_ui_labels():
+	"""Met à jour les labels d'UI avec les infos du niveau"""
+	if level_label:
+		var level_num = level_manager.get_level_number()
+		var total_levels = level_manager.get_total_levels()
+		var config = level_manager.get_current_level_config()
+		level_label.text = "Niveau " + str(level_num) + " - " + config.difficulty
+
+	if stars_label:
+		stars_label.text = "⭐ Total: " + str(level_manager.total_stars)
