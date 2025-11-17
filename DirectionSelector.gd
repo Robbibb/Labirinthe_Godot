@@ -24,27 +24,28 @@ func create_direction_buttons():
 	# Créer un conteneur horizontal pour les boutons
 	var buttons_container = HBoxContainer.new()
 	buttons_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons_container.add_theme_constant_override("separation", 15)
 	add_child(buttons_container)
 
 	# Créer les boutons pour chaque direction disponible
 	for direction in available_directions:
 		var button = Button.new()
-		button.custom_minimum_size = Vector2(80, 80)
+		button.custom_minimum_size = Vector2(100, 100)
 
 		# Texte du bouton selon la direction
 		var arrow_text = ""
 		match direction:
 			0:  # RIGHT
-				arrow_text = "→"
+				arrow_text = "DROITE"
 			1:  # LEFT
-				arrow_text = "←"
+				arrow_text = "GAUCHE"
 			2:  # UP
-				arrow_text = "↑"
+				arrow_text = "HAUT"
 			3:  # DOWN
-				arrow_text = "↓"
+				arrow_text = "BAS"
 
 		button.text = arrow_text
-		button.add_theme_font_size_override("font_size", 36)
+		button.add_theme_font_size_override("font_size", 18)
 
 		# Stocker la direction dans les métadonnées du bouton
 		button.set_meta("direction", direction)

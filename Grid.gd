@@ -6,6 +6,7 @@ const CELL_SIZE = 80
 var start_pos = Vector2i(0, 0)
 var end_pos = Vector2i(4, 4)
 var obstacles = []
+var player_pos = Vector2i(0, 0)
 
 func _ready():
 	queue_redraw()
@@ -14,7 +15,13 @@ func setup_grid(start: Vector2i, end: Vector2i, obs: Array):
 	"""Configure la grille avec les positions de départ, arrivée et obstacles"""
 	start_pos = start
 	end_pos = end
+	player_pos = start
 	obstacles = obs.duplicate()
+	queue_redraw()
+
+func set_player_position(pos: Vector2i):
+	"""Met à jour la position du joueur"""
+	player_pos = pos
 	queue_redraw()
 
 func grid_to_pixel(grid_pos: Vector2i) -> Vector2:
@@ -58,3 +65,7 @@ func _draw():
 
 	draw_circle(grid_to_pixel(end_pos), 15, Color(0.2, 0.8, 0.2))
 	draw_string(ThemeDB.fallback_font, grid_to_pixel(end_pos) - Vector2(8, -5), "A", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
+
+	# Dessiner le joueur
+	draw_circle(grid_to_pixel(player_pos), 18, Color(1.0, 0.5, 0.0))
+	draw_string(ThemeDB.fallback_font, grid_to_pixel(player_pos) - Vector2(8, -5), "P", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)

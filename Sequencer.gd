@@ -32,16 +32,16 @@ func create_arrow_display(direction: int):
 	var arrow_text = ""
 	match direction:
 		0:  # RIGHT
-			arrow_text = "→"
+			arrow_text = ">"
 		1:  # LEFT
-			arrow_text = "←"
+			arrow_text = "<"
 		2:  # UP
-			arrow_text = "↑"
+			arrow_text = "^"
 		3:  # DOWN
-			arrow_text = "↓"
+			arrow_text = "v"
 
 	arrow_label.text = arrow_text
-	arrow_label.add_theme_font_size_override("font_size", 36)
+	arrow_label.add_theme_font_size_override("font_size", 32)
 
 	arrow_panel.add_child(arrow_label)
 	add_child(arrow_panel)

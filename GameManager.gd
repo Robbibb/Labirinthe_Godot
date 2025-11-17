@@ -213,9 +213,8 @@ func execute_sequence():
 
 func update_player_position():
 	"""Met à jour la position visuelle du joueur"""
-	if player_sprite and grid:
-		var pixel_pos = grid.grid_to_pixel(current_pos)
-		player_sprite.position = pixel_pos
+	if grid:
+		grid.set_player_position(current_pos)
 
 func show_error():
 	"""Affiche une animation d'erreur"""
