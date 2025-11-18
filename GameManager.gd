@@ -358,6 +358,9 @@ func execute_sequence():
 			generate_level()
 			_on_reset_pressed()
 			update_ui_labels()
+			# Mettre à jour les boutons de direction avec les nouveaux mouvements disponibles
+			if direction_selector:
+				direction_selector.setup(available_moves)
 			return
 
 	# Séquence terminée mais pas à l'arrivée
@@ -430,6 +433,9 @@ func _on_previous_level_pressed():
 		generate_level()
 		_on_reset_pressed()
 		update_ui_labels()
+		# Mettre à jour les boutons de direction avec les nouveaux mouvements disponibles
+		if direction_selector:
+			direction_selector.setup(available_moves)
 	else:
 		print("Déjà au premier niveau")
 
@@ -445,6 +451,9 @@ func _on_next_level_pressed():
 		generate_level()
 		_on_reset_pressed()
 		update_ui_labels()
+		# Mettre à jour les boutons de direction avec les nouveaux mouvements disponibles
+		if direction_selector:
+			direction_selector.setup(available_moves)
 	else:
 		print("C'est le dernier niveau prédéfini")
 
@@ -458,3 +467,6 @@ func _on_reset_progress_pressed():
 	generate_level()
 	_on_reset_pressed()
 	update_ui_labels()
+	# Mettre à jour les boutons de direction avec les nouveaux mouvements disponibles
+	if direction_selector:
+		direction_selector.setup(available_moves)
