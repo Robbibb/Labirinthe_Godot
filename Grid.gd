@@ -83,49 +83,67 @@ func _draw():
 	draw_player(grid_to_pixel(player_pos))
 
 func draw_player(pos: Vector2):
-	"""Dessine un personnage mignon pour le joueur avec son orientation"""
-	# Corps principal (cercle avec la couleur flash)
-	draw_circle(pos, 22, player_flash_color)
-	# Contour blanc (utiliser draw_arc pour le contour)
-	draw_arc(pos, 22, 0, TAU, 32, Color.WHITE, 3.0)
-
+	"""Dessine un personnage mignon pour le joueur avec son orientation très visible"""
 	# Calculer la rotation selon l'orientation
 	# 0=Nord(haut), 1=Est(droite), 2=Sud(bas), 3=Ouest(gauche)
 	var rotation = player_facing * PI / 2  # 0°, 90°, 180°, 270°
 
-	# Yeux (tournés dans la direction)
-	var eye_offset = 8
-	var eye1_local = Vector2(-eye_offset, -5)
-	var eye2_local = Vector2(eye_offset, -5)
+	# Corps principal (cercle avec la couleur flash)
+	draw_circle(pos, 24, player_flash_color)
+	# Contour blanc
+	draw_arc(pos, 24, 0, TAU, 32, Color.WHITE, 3.0)
+
+	# GROSSE FLÈCHE directionnelle pointant vers l'avant (très visible)
+	var arrow_front = Vector2(0, -32)  # Pointe vers le haut par défaut
+	var arrow_front_rotated = arrow_front.rotated(rotation)
+	var arrow_front_points = PackedVector2Array([
+		pos + arrow_front_rotated,  # Pointe
+		pos + arrow_front_rotated + Vector2(-10, 12).rotated(rotation),  # Base gauche
+		pos + arrow_front_rotated + Vector2(0, 8).rotated(rotation),  # Centre base
+		pos + arrow_front_rotated + Vector2(10, 12).rotated(rotation)  # Base droite
+	])
+	# Fond de la flèche
+	draw_colored_polygon(arrow_front_points, Color.WHITE)
+	# Contour noir
+	draw_polyline(PackedVector2Array([
+		arrow_front_points[0],
+		arrow_front_points[1],
+		arrow_front_points[2],
+		arrow_front_points[3],
+		arrow_front_points[0]
+	]), Color.BLACK, 3.0)
+
+	# Yeux PLUS GROS (tournés dans la direction)
+	var eye_offset = 9
+	var eye1_local = Vector2(-eye_offset, -8)
+	var eye2_local = Vector2(eye_offset, -8)
 
 	# Rotation des yeux
 	var eye1_rotated = eye1_local.rotated(rotation)
 	var eye2_rotated = eye2_local.rotated(rotation)
 
-	draw_circle(pos + eye1_rotated, 4, Color.WHITE)
-	draw_circle(pos + eye2_rotated, 4, Color.WHITE)
-	draw_circle(pos + eye1_rotated, 2, Color.BLACK)
-	draw_circle(pos + eye2_rotated, 2, Color.BLACK)
+	# Dessiner les yeux plus gros et expressifs
+	draw_circle(pos + eye1_rotated, 6, Color.WHITE)
+	draw_circle(pos + eye2_rotated, 6, Color.WHITE)
+	draw_circle(pos + eye1_rotated, 3, Color.BLACK)
+	draw_circle(pos + eye2_rotated, 3, Color.BLACK)
+	# Reflets dans les yeux
+	draw_circle(pos + eye1_rotated + Vector2(-1, -1), 1, Color.WHITE)
+	draw_circle(pos + eye2_rotated + Vector2(-1, -1), 1, Color.WHITE)
 
 	# Sourire (tourné dans la direction)
 	var smile_points = PackedVector2Array()
 	for i in range(7):
 		var angle = PI * 0.2 + (i * PI * 0.6 / 6)
-		var smile_radius = 10
-		var local_point = Vector2(cos(angle) * smile_radius, sin(angle) * smile_radius + 2)
+		var smile_radius = 11
+		var local_point = Vector2(cos(angle) * smile_radius, sin(angle) * smile_radius + 4)
 		smile_points.append(pos + local_point.rotated(rotation))
-	draw_polyline(smile_points, Color.BLACK, 3.0)
+	draw_polyline(smile_points, Color.BLACK, 3.5)
 
-	# Flèche indiquant la direction (au-dessus du personnage)
-	var arrow_base = Vector2(0, -28)  # Juste au-dessus du cercle
-	var arrow_rotated = arrow_base.rotated(rotation)
-	var arrow_points = PackedVector2Array([
-		pos + arrow_rotated + Vector2(-5, 5).rotated(rotation),
-		pos + arrow_rotated,
-		pos + arrow_rotated + Vector2(5, 5).rotated(rotation)
-	])
-	draw_polyline(arrow_points, Color.WHITE, 4.0)
-	draw_polyline(arrow_points, Color.BLACK, 2.0)
+	# Petit nez/bec pointant dans la direction pour encore plus de clarté
+	var nose_local = Vector2(0, -2)
+	var nose_rotated = nose_local.rotated(rotation)
+	draw_circle(pos + nose_rotated, 2, Color(0.9, 0.4, 0.2))
 
 func draw_flag(pos: Vector2):
 	"""Dessine un drapeau coloré pour l'arrivée"""
