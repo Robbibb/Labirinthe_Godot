@@ -107,25 +107,25 @@ func generate_level():
 	# Sauvegarder la solution optimale
 	optimal_solution = solution_path.duplicate()
 
-	# Compter combien de chaque action est nécessaire dans la solution
-	var action_counts = [0, 0, 0, 0]  # TURN_LEFT, TURN_RIGHT, FORWARD, BACKWARD
-	for action in solution_path:
-		action_counts[action] += 1
-
-	# Construire available_moves en garantissant qu'on a AU MOINS les actions nécessaires
+	# Construire available_moves en donnant exactement la solution + quelques extras
+	# Pour un jeu de puzzle, on donne les bonnes pièces dans le désordre
 	available_moves.clear()
 
-	# Ajouter les actions nécessaires + quelques extras pour chaque type
-	for action_type in range(4):
-		var needed = action_counts[action_type]
-		var extras = randi() % 3 + 2  # 2 à 4 actions supplémentaires
-		var total = needed + extras
+	# Ajouter toutes les actions de la solution optimale
+	for action in solution_path:
+		available_moves.append(action)
 
-		for i in range(total):
-			available_moves.append(action_type)
+	# Ajouter quelques actions supplémentaires pour la difficulté
+	# Mais pas trop pour ne pas rendre impossible
+	var num_extras = min(3, solution_path.size() / 3)  # Max 3 extras ou 1/3 de la solution
+	for i in range(num_extras):
+		# Ajouter des actions aléatoires
+		available_moves.append(randi() % 4)
 
 	# Mélanger les actions
 	available_moves.shuffle()
+
+	print("Solution générée: ", solution_path.size(), " actions, Available moves: ", available_moves.size())
 
 	# Placer des obstacles (en évitant le chemin solution)
 	generate_obstacles(solution_path)
