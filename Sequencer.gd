@@ -22,16 +22,16 @@ func create_arrow_display(direction: int):
 	var arrow_panel = Panel.new()
 	arrow_panel.custom_minimum_size = Vector2(ARROW_SIZE, ARROW_SIZE)
 
-	# Couleur selon la direction (même que les boutons)
+	# Couleur selon l'action (même que les boutons)
 	var panel_color = Color.WHITE
 	match direction:
-		0:  # RIGHT
+		0:  # TURN_LEFT
 			panel_color = Color(0.4, 0.7, 1.0)  # Bleu clair
-		1:  # LEFT
+		1:  # TURN_RIGHT
 			panel_color = Color(1.0, 0.6, 0.4)  # Orange clair
-		2:  # UP
+		2:  # FORWARD
 			panel_color = Color(0.6, 1.0, 0.6)  # Vert clair
-		3:  # DOWN
+		3:  # BACKWARD
 			panel_color = Color(1.0, 0.9, 0.4)  # Jaune
 
 	# Style du panel
@@ -45,29 +45,29 @@ func create_arrow_display(direction: int):
 	style.border_color = Color.WHITE
 	arrow_panel.add_theme_stylebox_override("panel", style)
 
-	var arrow_label = Label.new()
-	arrow_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	arrow_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	arrow_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	arrow_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var action_label = Label.new()
+	action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	action_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	action_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	action_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	# Définir le symbole de la flèche selon la direction
-	var arrow_text = ""
+	# Définir le symbole selon l'action
+	var action_text = ""
 	match direction:
-		0:  # RIGHT
-			arrow_text = "▶"
-		1:  # LEFT
-			arrow_text = "◀"
-		2:  # UP
-			arrow_text = "▲"
-		3:  # DOWN
-			arrow_text = "▼"
+		0:  # TURN_LEFT
+			action_text = "↶"
+		1:  # TURN_RIGHT
+			action_text = "↷"
+		2:  # FORWARD
+			action_text = "⬆"
+		3:  # BACKWARD
+			action_text = "⬇"
 
-	arrow_label.text = arrow_text
-	arrow_label.add_theme_font_size_override("font_size", 36)
-	arrow_label.add_theme_color_override("font_color", Color.BLACK)
+	action_label.text = action_text
+	action_label.add_theme_font_size_override("font_size", 36)
+	action_label.add_theme_color_override("font_color", Color.BLACK)
 
-	arrow_panel.add_child(arrow_label)
+	arrow_panel.add_child(action_label)
 	add_child(arrow_panel)
 
 func get_sequence() -> Array:

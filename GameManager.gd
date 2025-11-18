@@ -23,6 +23,7 @@ const CELL_SIZE = 80
 var start_pos = Vector2i(0, 0)
 var end_pos = Vector2i(4, 4)
 var current_pos = Vector2i(0, 0)
+var player_facing = 0  # 0=Nord(haut), 1=Est(droite), 2=Sud(bas), 3=Ouest(gauche)
 var obstacles = []
 var available_moves = []
 var selected_sequence = []
@@ -30,14 +31,16 @@ var is_executing = false
 var optimal_solution = []
 var moves_used = 0
 
-# Directions
-enum Direction { RIGHT, LEFT, UP, DOWN }
-var direction_vectors = {
-	Direction.RIGHT: Vector2i(1, 0),
-	Direction.LEFT: Vector2i(-1, 0),
-	Direction.UP: Vector2i(0, -1),
-	Direction.DOWN: Vector2i(0, 1)
-}
+# Actions du joueur
+enum Action { TURN_LEFT, TURN_RIGHT, FORWARD, BACKWARD }
+
+# Vecteurs de direction selon l'orientation (Nord, Est, Sud, Ouest)
+var direction_vectors = [
+	Vector2i(0, -1),  # Nord (haut)
+	Vector2i(1, 0),   # Est (droite)
+	Vector2i(0, 1),   # Sud (bas)
+	Vector2i(-1, 0)   # Ouest (gauche)
+]
 
 func _ready():
 	# Créer le gestionnaire de niveaux
@@ -75,6 +78,7 @@ func generate_level():
 		end_pos = Vector2i(randi() % GRID_SIZE, randi() % GRID_SIZE)
 
 	current_pos = start_pos
+	player_facing = 0  # Toujours commencer en regardant vers le nord
 	moves_used = 0
 
 	# Générer un chemin solution
@@ -82,8 +86,17 @@ func generate_level():
 
 	# Vérifier que le chemin est valide (atteint bien la destination)
 	var test_pos = start_pos
-	for dir in solution_path:
-		test_pos += direction_vectors[dir]
+	var test_facing = 0
+	for action in solution_path:
+		match action:
+			Action.TURN_LEFT:
+				test_facing = (test_facing - 1 + 4) % 4
+			Action.TURN_RIGHT:
+				test_facing = (test_facing + 1) % 4
+			Action.FORWARD:
+				test_pos += direction_vectors[test_facing]
+			Action.BACKWARD:
+				test_pos -= direction_vectors[test_facing]
 
 	# Si le chemin n'atteint pas la destination, régénérer le niveau
 	if test_pos != end_pos:
@@ -94,24 +107,24 @@ func generate_level():
 	# Sauvegarder la solution optimale
 	optimal_solution = solution_path.duplicate()
 
-	# Compter combien de chaque direction est nécessaire dans la solution
-	var direction_counts = [0, 0, 0, 0]  # RIGHT, LEFT, UP, DOWN
-	for dir in solution_path:
-		direction_counts[dir] += 1
+	# Compter combien de chaque action est nécessaire dans la solution
+	var action_counts = [0, 0, 0, 0]  # TURN_LEFT, TURN_RIGHT, FORWARD, BACKWARD
+	for action in solution_path:
+		action_counts[action] += 1
 
-	# Construire available_moves en garantissant qu'on a AU MOINS les mouvements nécessaires
+	# Construire available_moves en garantissant qu'on a AU MOINS les actions nécessaires
 	available_moves.clear()
 
-	# Ajouter les mouvements nécessaires + quelques extras pour chaque direction
-	for dir in range(4):
-		var needed = direction_counts[dir]
-		var extras = randi() % 3 + 2  # 2 à 4 mouvements supplémentaires
+	# Ajouter les actions nécessaires + quelques extras pour chaque type
+	for action_type in range(4):
+		var needed = action_counts[action_type]
+		var extras = randi() % 3 + 2  # 2 à 4 actions supplémentaires
 		var total = needed + extras
 
 		for i in range(total):
-			available_moves.append(dir)
+			available_moves.append(action_type)
 
-	# Mélanger les mouvements
+	# Mélanger les actions
 	available_moves.shuffle()
 
 	# Placer des obstacles (en évitant le chemin solution)
@@ -122,37 +135,63 @@ func generate_level():
 		grid.setup_grid(start_pos, end_pos, obstacles, GRID_SIZE)
 
 func generate_solution_path() -> Array:
-	"""Génère un chemin solution du départ à l'arrivée avec des zigzags"""
+	"""Génère un chemin solution du départ à l'arrivée avec rotations et mouvements"""
 	var path = []
 	var pos = start_pos
-
-	# Créer un chemin avec des zigzags pour plus de variété
-	var steps_x = abs(end_pos.x - start_pos.x)
-	var steps_y = abs(end_pos.y - start_pos.y)
-
-	var dir_x = Direction.RIGHT if end_pos.x > start_pos.x else Direction.LEFT
-	var dir_y = Direction.DOWN if end_pos.y > start_pos.y else Direction.UP
+	var facing = 0  # Commence en regardant vers le Nord (haut)
 
 	# Alterner entre mouvements X et Y pour créer un zigzag
 	var use_x = true
 
 	while pos != end_pos:
+		var target_direction = -1
+
+		# Décider quelle direction prendre
 		if use_x and pos.x != end_pos.x:
 			# Se déplacer horizontalement
-			path.append(dir_x)
-			pos += direction_vectors[dir_x]
+			if end_pos.x > pos.x:
+				target_direction = 1  # Est (droite)
+			else:
+				target_direction = 3  # Ouest (gauche)
 		elif pos.y != end_pos.y:
 			# Se déplacer verticalement
-			path.append(dir_y)
-			pos += direction_vectors[dir_y]
+			if end_pos.y > pos.y:
+				target_direction = 2  # Sud (bas)
+			else:
+				target_direction = 0  # Nord (haut)
 		else:
 			break
+
+		# Tourner vers la direction cible
+		var rotation_needed = (target_direction - facing + 4) % 4
+
+		if rotation_needed == 1:
+			# Tourner à droite une fois
+			path.append(Action.TURN_RIGHT)
+			facing = (facing + 1) % 4
+		elif rotation_needed == 2:
+			# Tourner 180° (deux fois à droite ou deux fois à gauche, choisir aléatoirement)
+			if randi() % 2 == 0:
+				path.append(Action.TURN_RIGHT)
+				path.append(Action.TURN_RIGHT)
+			else:
+				path.append(Action.TURN_LEFT)
+				path.append(Action.TURN_LEFT)
+			facing = (facing + 2) % 4
+		elif rotation_needed == 3:
+			# Tourner à gauche une fois (équivalent à 3 fois à droite)
+			path.append(Action.TURN_LEFT)
+			facing = (facing - 1 + 4) % 4
+
+		# Avancer dans la direction actuelle
+		path.append(Action.FORWARD)
+		pos += direction_vectors[facing]
 
 		# Alterner pour créer un zigzag
 		use_x = not use_x
 
 		# Sécurité
-		if path.size() > 30:
+		if path.size() > 50:
 			break
 
 	return path
@@ -168,12 +207,23 @@ func generate_obstacles(solution_path: Array):
 	# Calculer les positions du chemin solution
 	var solution_positions = {}
 	var pos = start_pos
+	var facing = 0
 	solution_positions[pos] = true
 
-	for dir in solution_path:
-		pos += direction_vectors[dir]
-		if is_valid_position(pos):
-			solution_positions[pos] = true
+	for action in solution_path:
+		match action:
+			Action.TURN_LEFT:
+				facing = (facing - 1 + 4) % 4
+			Action.TURN_RIGHT:
+				facing = (facing + 1) % 4
+			Action.FORWARD:
+				pos += direction_vectors[facing]
+				if is_valid_position(pos):
+					solution_positions[pos] = true
+			Action.BACKWARD:
+				pos -= direction_vectors[facing]
+				if is_valid_position(pos):
+					solution_positions[pos] = true
 
 	# Ajouter des obstacles aléatoires
 	for i in range(num_obstacles):
@@ -244,25 +294,54 @@ func _on_execute_pressed():
 	direction_selector.set_enabled(true)
 
 func execute_sequence():
-	"""Execute la séquence de mouvements case par case"""
+	"""Execute la séquence d'actions case par case"""
 	current_pos = start_pos
+	player_facing = 0  # Réinitialiser l'orientation
 	update_player_position()
 
-	for direction in selected_sequence:
+	for action in selected_sequence:
 		await get_tree().create_timer(0.5).timeout
 
-		var next_pos = current_pos + direction_vectors[direction]
+		match action:
+			Action.TURN_LEFT:
+				# Tourner à gauche (90° antihoraire)
+				player_facing = (player_facing - 1 + 4) % 4
+				update_player_position()
 
-		# Vérifier si le mouvement est valide
-		if not is_valid_position(next_pos) or is_obstacle(next_pos):
-			# Mouvement invalide : clignoter en rouge
-			await show_error()
-			_on_reset_pressed()
-			return
+			Action.TURN_RIGHT:
+				# Tourner à droite (90° horaire)
+				player_facing = (player_facing + 1) % 4
+				update_player_position()
 
-		# Mouvement valide
-		current_pos = next_pos
-		update_player_position()
+			Action.FORWARD:
+				# Avancer dans la direction actuelle
+				var next_pos = current_pos + direction_vectors[player_facing]
+
+				# Vérifier si le mouvement est valide
+				if not is_valid_position(next_pos) or is_obstacle(next_pos):
+					# Mouvement invalide : clignoter en rouge
+					await show_error()
+					_on_reset_pressed()
+					return
+
+				# Mouvement valide
+				current_pos = next_pos
+				update_player_position()
+
+			Action.BACKWARD:
+				# Reculer (opposé de la direction actuelle)
+				var next_pos = current_pos - direction_vectors[player_facing]
+
+				# Vérifier si le mouvement est valide
+				if not is_valid_position(next_pos) or is_obstacle(next_pos):
+					# Mouvement invalide : clignoter en rouge
+					await show_error()
+					_on_reset_pressed()
+					return
+
+				# Mouvement valide
+				current_pos = next_pos
+				update_player_position()
 
 		# Vérifier si on a atteint l'arrivée
 		if current_pos == end_pos:
@@ -288,7 +367,7 @@ func execute_sequence():
 func update_player_position():
 	"""Met à jour la position visuelle du joueur"""
 	if grid:
-		grid.set_player_position(current_pos)
+		grid.set_player_position(current_pos, player_facing)
 
 func show_error():
 	"""Affiche une animation d'erreur"""

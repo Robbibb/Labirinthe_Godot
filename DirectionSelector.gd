@@ -32,25 +32,25 @@ func create_direction_buttons():
 		var button = Button.new()
 		button.custom_minimum_size = Vector2(100, 100)
 
-		# Texte et couleur du bouton selon la direction
-		var arrow_text = ""
+		# Texte et couleur du bouton selon l'action
+		var action_text = ""
 		var button_color = Color.WHITE
 		match direction:
-			0:  # RIGHT
-				arrow_text = "➡️ DROITE"
+			0:  # TURN_LEFT
+				action_text = "↶ TOURNER\nGAUCHE"
 				button_color = Color(0.4, 0.7, 1.0)  # Bleu clair
-			1:  # LEFT
-				arrow_text = "⬅️ GAUCHE"
+			1:  # TURN_RIGHT
+				action_text = "↷ TOURNER\nDROITE"
 				button_color = Color(1.0, 0.6, 0.4)  # Orange clair
-			2:  # UP
-				arrow_text = "⬆️ HAUT"
+			2:  # FORWARD
+				action_text = "⬆ AVANCER"
 				button_color = Color(0.6, 1.0, 0.6)  # Vert clair
-			3:  # DOWN
-				arrow_text = "⬇️ BAS"
+			3:  # BACKWARD
+				action_text = "⬇ RECULER"
 				button_color = Color(1.0, 0.9, 0.4)  # Jaune
 
-		button.text = arrow_text
-		button.add_theme_font_size_override("font_size", 16)
+		button.text = action_text
+		button.add_theme_font_size_override("font_size", 14)
 		button.add_theme_color_override("font_color", Color.BLACK)
 
 		# Créer un StyleBox coloré pour le bouton

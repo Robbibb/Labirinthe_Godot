@@ -7,6 +7,7 @@ var start_pos = Vector2i(0, 0)
 var end_pos = Vector2i(4, 4)
 var obstacles = []
 var player_pos = Vector2i(0, 0)
+var player_facing = 0  # 0=Nord, 1=Est, 2=Sud, 3=Ouest
 var player_flash_color = Color(1.0, 0.5, 0.0)  # Orange par défaut
 
 func _ready():
@@ -24,9 +25,10 @@ func setup_grid(start: Vector2i, end: Vector2i, obs: Array, grid_size: int = 5):
 	print("Grid setup_grid appelé - Taille: ", GRID_SIZE, "x", GRID_SIZE, ", Start: ", start, ", End: ", end, ", Obstacles: ", obstacles.size())
 	queue_redraw()
 
-func set_player_position(pos: Vector2i):
-	"""Met à jour la position du joueur"""
+func set_player_position(pos: Vector2i, facing: int = 0):
+	"""Met à jour la position et l'orientation du joueur"""
 	player_pos = pos
+	player_facing = facing
 	queue_redraw()
 
 func grid_to_pixel(grid_pos: Vector2i) -> Vector2:
@@ -81,26 +83,49 @@ func _draw():
 	draw_player(grid_to_pixel(player_pos))
 
 func draw_player(pos: Vector2):
-	"""Dessine un personnage mignon pour le joueur"""
+	"""Dessine un personnage mignon pour le joueur avec son orientation"""
 	# Corps principal (cercle avec la couleur flash)
 	draw_circle(pos, 22, player_flash_color)
 	# Contour blanc (utiliser draw_arc pour le contour)
 	draw_arc(pos, 22, 0, TAU, 32, Color.WHITE, 3.0)
 
-	# Yeux
-	var eye_offset = 8
-	draw_circle(pos + Vector2(-eye_offset, -5), 4, Color.WHITE)
-	draw_circle(pos + Vector2(eye_offset, -5), 4, Color.WHITE)
-	draw_circle(pos + Vector2(-eye_offset, -5), 2, Color.BLACK)
-	draw_circle(pos + Vector2(eye_offset, -5), 2, Color.BLACK)
+	# Calculer la rotation selon l'orientation
+	# 0=Nord(haut), 1=Est(droite), 2=Sud(bas), 3=Ouest(gauche)
+	var rotation = player_facing * PI / 2  # 0°, 90°, 180°, 270°
 
-	# Sourire
+	# Yeux (tournés dans la direction)
+	var eye_offset = 8
+	var eye1_local = Vector2(-eye_offset, -5)
+	var eye2_local = Vector2(eye_offset, -5)
+
+	# Rotation des yeux
+	var eye1_rotated = eye1_local.rotated(rotation)
+	var eye2_rotated = eye2_local.rotated(rotation)
+
+	draw_circle(pos + eye1_rotated, 4, Color.WHITE)
+	draw_circle(pos + eye2_rotated, 4, Color.WHITE)
+	draw_circle(pos + eye1_rotated, 2, Color.BLACK)
+	draw_circle(pos + eye2_rotated, 2, Color.BLACK)
+
+	# Sourire (tourné dans la direction)
 	var smile_points = PackedVector2Array()
 	for i in range(7):
 		var angle = PI * 0.2 + (i * PI * 0.6 / 6)
 		var smile_radius = 10
-		smile_points.append(pos + Vector2(cos(angle) * smile_radius, sin(angle) * smile_radius + 2))
+		var local_point = Vector2(cos(angle) * smile_radius, sin(angle) * smile_radius + 2)
+		smile_points.append(pos + local_point.rotated(rotation))
 	draw_polyline(smile_points, Color.BLACK, 3.0)
+
+	# Flèche indiquant la direction (au-dessus du personnage)
+	var arrow_base = Vector2(0, -28)  # Juste au-dessus du cercle
+	var arrow_rotated = arrow_base.rotated(rotation)
+	var arrow_points = PackedVector2Array([
+		pos + arrow_rotated + Vector2(-5, 5).rotated(rotation),
+		pos + arrow_rotated,
+		pos + arrow_rotated + Vector2(5, 5).rotated(rotation)
+	])
+	draw_polyline(arrow_points, Color.WHITE, 4.0)
+	draw_polyline(arrow_points, Color.BLACK, 2.0)
 
 func draw_flag(pos: Vector2):
 	"""Dessine un drapeau coloré pour l'arrivée"""
